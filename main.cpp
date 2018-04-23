@@ -5,8 +5,14 @@
 #include <iomanip>
 #include <string>
 #include <cstdlib>
+#include <conio.h>
+#include <ctime> 
+#include <stdlib.h>
+
+
 
 using namespace std;
+
 
 void Display(char Board[][10], int SIZE);
 void CreateBoard(char Board[][10], int SIZE);
@@ -28,7 +34,7 @@ public:
 	void SetxpositionAircraft (char Board[][10], int SIZE)
 	{
 		char temp;
-		cout << "where would you like to place your Aircraft Carrier?  enter Ex. 5 5" << endl;
+		cout << "where would you like to place your Aircraft Carrier?  enter Ex. A 5" << endl;
 		cin >> temp >> xposition2;
 		xposition1 = charToInt(temp);
 
@@ -105,7 +111,7 @@ public:
 	void SetxpositionBattleship(char Board[][10], int SIZE)
 	{
 		char temp;
-		cout << "where would you like to place your Battleship?  enter Ex. 5 5" << endl;
+		cout << "where would you like to place your Battleship?  enter Ex. A 5" << endl;
 		cin >> temp >> xposition2;
 		xposition1 = charToInt(temp);
 		while (Board[xposition1][xposition2] == 'A')
@@ -219,7 +225,7 @@ public:
 	void SetxpositionCruiser(char Board[][10])
 	{
 		char temp;
-		cout << "where would you like to place your Cruiser?  enter Ex. 5 5" << endl;
+		cout << "where would you like to place your Cruiser?  enter Ex. A 5" << endl;
 		cin >> temp >> xposition2;
 		xposition1 = charToInt(temp);
 		while (Board[xposition1][xposition2] == 'S' || Board[xposition1][xposition2] == 'B')
@@ -328,7 +334,7 @@ public:
 	void SetxpositionSubmarine(char Board[][10])
 	{
 		char temp;
-		cout << "where would you like to place your Submarine?  enter Ex. 5 5" << endl;
+		cout << "where would you like to place your Submarine?  enter Ex. A 5" << endl;
 		cin >> temp >> xposition2;
 		xposition1 = charToInt(temp);
 		while (Board[xposition1][xposition2] == 'S' || Board[xposition1][xposition2] == 'B' || Board[xposition1][xposition2] == 'C')
@@ -435,7 +441,7 @@ public:
 	void SetxpositionDestroyer(char Board[][10])
 	{
 		char temp;
-		cout << "where would you like to place your Destroyer?  enter Ex. 5 5" << endl;
+		cout << "where would you like to place your Destroyer?  enter Ex. A 5" << endl;
 		cin >> temp >> xposition2;
 		xposition1 = charToInt(temp);
 		while (Board[xposition1][xposition2] == 'S' || Board[xposition1][xposition2] == 'B' || Board[xposition1][xposition2] == 'C' || Board[xposition1][xposition2] == 'S')
@@ -541,6 +547,118 @@ public:
 	}
 };
 
+class Battleshipai : ShipPlacement
+{
+
+private:
+	bool Aircraftdestroyed;
+	bool Cruiserdestroyed;
+	bool Battleshipdestroyed;
+	bool Submarinedestroyed;
+	bool Destroyerdestroyed;
+	char shotPosition1Ai;
+	int  shotPosition2ai;
+public:
+	int number = rand() % 10 + 1;
+	 
+	void CheckSurvival(const char Boardp1[][10], int SIZE)
+	{
+		Aircraftdestroyed = true;
+		Battleshipdestroyed = true;
+		Cruiserdestroyed = true;
+		Submarinedestroyed = true;
+		Destroyerdestroyed = true;
+		for (int i = 0; i < SIZE; i++)
+		{
+			for (int j = 0; j < SIZE; j++)
+			{
+				if (Boardp1[i][j] == 'A')
+				{
+					Aircraftdestroyed = false;
+				}
+				if (Boardp1[i][j] == 'B')
+				{
+					Battleshipdestroyed = false;
+				}
+				if (Boardp1[i][j] == 'C')
+				{
+					Cruiserdestroyed = false;
+				}
+				if (Boardp1[i][j] == 'S')
+				{
+					Submarinedestroyed = false;
+				}
+				if (Boardp1[i][j] == 'D')
+				{
+					Destroyerdestroyed = false;
+				}
+			}	
+		}
+	}
+
+	void ShotPosition1(char BoardGuess[][10])
+	{
+		srand((unsigned)time(NULL));
+		char letterChoice;
+		int numberChoice, num;
+		do
+		{
+			num = rand() % 10;
+			numberChoice = rand() % 10;
+
+			switch (num)
+			{
+			case 0:
+				letterChoice = 'A';
+				break;
+			case 1:
+				letterChoice = 'B';
+				break;
+			case 2:
+				letterChoice = 'C';
+				break;
+			case 3:
+				letterChoice = 'D';
+				break;
+			case 4:
+				letterChoice = 'E';
+				break;
+			case 5:
+				letterChoice = 'F';
+				break;
+			case 6:
+				letterChoice = 'G';
+				break;
+			case 7:
+				letterChoice = 'H';
+				break;
+			case 8:
+				letterChoice = 'I';
+				break;
+			case 9:
+				letterChoice = 'J';
+				break;
+			}
+
+		} while (BoardGuess[num][numberChoice] == 'X' || BoardGuess[num][numberChoice] == 'O');
+
+		shotPosition1Ai = numberChoice;
+
+		shotPosition2ai = letterChoice;
+	}
+	
+
+
+
+
+
+
+
+
+
+
+
+};
 int main()
 {
 	
@@ -679,20 +797,26 @@ int main()
 void Display(char Board[][10], int SIZE)
 {
 	char Alphabet[] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G','H','I', 'J' };
-	cout << setw(7) << " ";
+	cout << "   ";
+	// prints numbers at top-----------
+	cout << "       ";
 	for (int i = 0; i < SIZE; i++)
 	{
-		cout << setw(8) << i;
+		cout << i << "   ";
 	}
-	cout << endl;
+	//----------------------------------
+	cout << "\n        -----------------------------------------" << endl;
+	
 	for (int i = 0; i < SIZE; i++)
 	{
-		cout << setw(8) <<Alphabet[i];// up and down
+		cout << "     " << Alphabet[i] << "  ";// up and down
 		for (int j = 0; j < SIZE; j++)
 		{
-			cout << setw(6) <<"|" << Board[i][j] << "|";
+			cout <<"| " << Board[i][j]<< " ";
 		}
+		cout << "|";
 		cout << endl;
+		cout << "        -----------------------------------------" << endl;
 	}
 }
 
@@ -702,7 +826,7 @@ void CreateBoard(char Board[][10], int SIZE)
 	{
 		for (int j = 0; j < SIZE; j++)
 		{
-			Board[i][j] = '~';
+			Board[i][j] = ' ';
 		}
 	}
 
