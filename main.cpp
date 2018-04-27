@@ -1,18 +1,13 @@
-
-
-
 #include <iostream>
 #include <iomanip>
 #include <string>
 #include <cstdlib>
 #include <conio.h>
-#include <ctime> 
+#include <ctime>
 #include <stdlib.h>
-
-
+#include <fstream>
 
 using namespace std;
-
 
 void Display(char Board[][10], int SIZE);
 void CreateBoard(char Board[][10], int SIZE);
@@ -21,6 +16,9 @@ void Shipplacement2(char Board[][10], int SIZE);
 void displayMenu();
 void DisplayBattleship();
 int charToInt(char);
+bool loadGame(char board1[][10], char board2[][10], char boardGuess1[][10], char boardGuess2[][10], int size);
+void saveGame(char board1[][10], char board2[][10], char boardGuess1[][10], char boardGuess2[][10], int size);
+void playGame(char BoardP1[][10], char BoardP2[][10], char BoardGuessP1[][10], char BoardGuessP2[][10], int SIZE);
 
 class ShipPlacement
 {
@@ -31,7 +29,7 @@ private:
 	string yposition;
 public:
 
-	void SetxpositionAircraft (char Board[][10], int SIZE)
+	void SetxpositionAircraft(char Board[][10], int SIZE)
 	{
 		char temp;
 		cout << "where would you like to place your Aircraft Carrier?  enter Ex. A 5" << endl;
@@ -44,16 +42,13 @@ public:
 			cin >> temp >> xposition2;
 			xposition1 = charToInt(temp);
 		}
-
-		
-
 	}
 
 	void SetypositionAircraft(char Board[][10], int SIZE)
 	{
 		cout << "Where do you want the Aircraft Carrier to face North, East, South, or West" << endl;
 		cin >> yposition;
-		while((yposition == "North" || yposition == "north" || yposition == "N") && xposition1 <4 )
+		while ((yposition == "North" || yposition == "north" || yposition == "N") && xposition1 <4)
 		{
 			cout << "The Aircraft carrier will not fit within the tiles" << endl;
 			cin >> yposition;
@@ -105,7 +100,7 @@ public:
 		{
 			cout << "Due to unforseen consequences The ship as erred off course due to bad directions " << endl;
 		}
-		
+
 	}
 
 	void SetxpositionBattleship(char Board[][10], int SIZE)
@@ -131,13 +126,13 @@ public:
 
 	}
 
-	void SetypositionBattleship(char Board[][10], int SIZE) 
+	void SetypositionBattleship(char Board[][10], int SIZE)
 	{
 		cout << "Where do you want the Battleship to face North, East, South, or West" << endl;
 		cin >> yposition;
 		//validation the north south east and west for empty tiles
-		
-		if (yposition == "North" || yposition == "north" || yposition == "N" || yposition == "East" || yposition == "east" || yposition == "E"|| yposition == "West" || yposition == "west" || yposition == "w" || yposition == "South" || yposition == "south" || yposition == "south")
+
+		if (yposition == "North" || yposition == "north" || yposition == "N" || yposition == "East" || yposition == "east" || yposition == "E" || yposition == "West" || yposition == "west" || yposition == "w" || yposition == "South" || yposition == "south" || yposition == "south")
 		{
 			for (int i = 0; i <4; i++)
 			{
@@ -190,12 +185,12 @@ public:
 			cin >> yposition;
 		}
 
-			//setting the squares to be the ships
+		//setting the squares to be the ships
 		if (yposition == "North" || yposition == "north" || yposition == "N")
 		{
 			for (int i = 0; i <4; i++)
 			{
-				Board[xposition1 -i ][xposition2] = 'B';
+				Board[xposition1 - i][xposition2] = 'B';
 			}
 		}
 		else if (yposition == "East" || yposition == "east" || yposition == "E")
@@ -258,7 +253,7 @@ public:
 					cout << "Invalid Deployment currently there is a ship there" << endl;
 					cin >> yposition;
 				}
-				if (Board[xposition1][xposition2 + i] == 'A'|| Board[xposition1][xposition2 + i] == 'B')
+				if (Board[xposition1][xposition2 + i] == 'A' || Board[xposition1][xposition2 + i] == 'B')
 				{
 					cout << "Invalid Deployment currently there is a ship there" << endl;
 					cin >> yposition;
@@ -362,7 +357,7 @@ public:
 		{
 			for (int i = 0; i <3; i++)
 			{
-				if (Board[xposition1 - i][xposition2] == 'A' || Board[xposition1 - i][xposition2] == 'B' ||Board[xposition1 - i][xposition2] == 'C')
+				if (Board[xposition1 - i][xposition2] == 'A' || Board[xposition1 - i][xposition2] == 'B' || Board[xposition1 - i][xposition2] == 'C')
 				{
 					cout << "Invalid Deployment currently there is a ship there" << endl;
 					cin >> yposition;
@@ -400,7 +395,7 @@ public:
 			cout << "The Submarine will not fit within the tiles" << endl;
 			cin >> yposition;
 		}
-		while ((yposition == "West" || yposition == "west" || yposition == "w" )&& xposition2 < 3)
+		while ((yposition == "West" || yposition == "west" || yposition == "w") && xposition2 < 3)
 		{
 			cout << "The Submarine will not fit within the tiles" << endl;
 			cin >> yposition;
@@ -560,7 +555,7 @@ private:
 	int  shotPosition2ai;
 public:
 	int number = rand() % 10 + 1;
-	 
+
 	void CheckSurvival(const char Boardp1[][10], int SIZE)
 	{
 		Aircraftdestroyed = true;
@@ -592,7 +587,7 @@ public:
 				{
 					Destroyerdestroyed = false;
 				}
-			}	
+			}
 		}
 	}
 
@@ -646,153 +641,165 @@ public:
 
 		shotPosition2ai = letterChoice;
 	}
-	
-
-
-
-
-
-
-
-
-
-
-
 };
+
 int main()
 {
-	
 	const int SIZE = 10;
 	char BoardP1[SIZE][SIZE];
 	char BoardP2[SIZE][SIZE];
 	char BoardGuessP1[SIZE][SIZE];
 	char BoardGuessP2[SIZE][SIZE];
 	int choice;
-	
-	DisplayBattleship();
-	displayMenu();
-	cin >> choice;
 
-	if (choice == 2)
+	while (true)
 	{
-		cout << "You have chosen 2-Player mode " << endl;
-		cout << "Creating the Board" << endl;
-		CreateBoard(BoardP1, SIZE);
-		CreateBoard(BoardGuessP1, SIZE);
-		CreateBoard(BoardP2, SIZE);
-		CreateBoard(BoardGuessP2, SIZE);
-		Shipplacement(BoardP1, SIZE);
-		Shipplacement2(BoardP2, SIZE);
-		while (true)
-		{
-			int position1, position2;
-			bool flag = false;
-			cout << "Player 1 take your shot" << endl;
-			Display(BoardGuessP1, SIZE);
-			Display(BoardP1, SIZE);
-			cout << "Please enter the coordinates of where you wish to fire" << endl;
-			cin >> position1 >> position2;
-			while (position1 > 10 || position2 > 10 || position1 < 1 || position2 < 1)
-			{
-				cout << "Invalid coordinates to fire please input a correct scope of attack" << endl;
-				cin >> position1 >> position2;
-			}
-
-			if (BoardP2[position1][position2] != '~')
-			{
-				cout << "You have hit an enemy ship uploading to table" << endl;
-				BoardGuessP1[position1][position2] = 'X';
-				BoardP2[position1][position2] = 'X';
-			}
-			else
-			{
-				cout << "You have missed" << endl;
-				BoardGuessP1[position1][position2] = 'O';
-				BoardP2[position1][position2] = 'O';
-			}
-
-			cout << "Player 2 take your shot" << endl;
-			
-			Display(BoardGuessP2, SIZE);
-			Display(BoardP2, SIZE);
-			cout << "Please enter the coordinates of where you wish to fire" << endl;
-			cin >> position1 >> position2;
-			while (position1 > 10 || position2 > 10 || position1 < 1 || position2 < 1)
-			{
-				cout << "Invalid coordinates to fire please input a correct scope of attack" << endl;
-				cin >> position1 >> position2;
-			}
-
-			if (BoardP1[position1][position2] != '~')
-			{
-				cout << "You have hit an enemy ship uploading to table" << endl;
-				BoardGuessP2[position1][position2] = 'X';
-				BoardP1[position1][position2] = 'X';
-			}
-			else
-			{
-				cout << "You have missed" << endl;
-				BoardGuessP1[position1][position2] = 'O';
-				BoardP1[position1][position2] = 'O';
-			}
-			for (int i = 0; i < SIZE; i++)
-			{
-				for (int j = 0; j < SIZE; j++)
-				{
-					if (BoardP1[i][j] != '~' || BoardP1[i][j] != 'X' || BoardP1[i][j] != 'O')
-					{
-						flag = false;
-					}
-					else
-					{
-						flag = true;
-						cout << "Winner is player 2" << endl;
-					}
-
-					if (BoardP2[i][j] != '~' || BoardP1[i][j] != 'X' || BoardP1[i][j] != 'O')
-					{
-						flag = false;
-					}
-					else
-					{
-						flag = true;
-						cout << "Winner is player 1" << endl;
-					}
-				}
-				
-			}
-
-			if (flag = true)
-			{
-				break;
-			}
-
-		}
-	}
-	else if (choice == 1)
-	{
-
-	}
-	else if (choice == 3)
-	{
-		system("pause");
-		return 0;
-
-	}
-	else
-	{
-		cout << "You have made an Invalid choice Please try again" << endl;
+		DisplayBattleship();
+		displayMenu();
 		cin >> choice;
-		while (choice < 1 || choice > 3)
+		while (choice < 1 || choice > 4)
 		{
-			cout << "Invalid" << endl;
+			cout << "You have made an Invalid choice Please try again" << endl;
 			cin >> choice;
 		}
-	}
 
+		if (choice == 1)
+		{
+			cout << "Single player Vs. AI Coming soon." << endl;
+			system("PAUSE");
+			system("cls");
+		}
+		else if (choice == 2)
+		{
+			cout << "You have chosen 2-Player mode " << endl;
+			cout << "Creating the Board" << endl;
+			CreateBoard(BoardP1, SIZE);
+			CreateBoard(BoardGuessP1, SIZE);
+			CreateBoard(BoardP2, SIZE);
+			CreateBoard(BoardGuessP2, SIZE);
+			Shipplacement(BoardP1, SIZE);
+			Shipplacement2(BoardP2, SIZE);
+			playGame(BoardP1, BoardP2, BoardGuessP1, BoardGuessP2, SIZE);
+			system("PAUSE");
+			system("cls");
+			/*while (true)
+			{
+				char temp;
+				int position1, position2;
+				bool flag = false;
+				cout << "Player 1 take your shot" << endl;
+				Display(BoardGuessP1, SIZE);
+				Display(BoardP1, SIZE);
+				cout << "Please enter the coordinates of where you wish to fire" << endl;
+				cin >> temp >> position2;
+				position1 = charToInt(temp);
+				//cin >> position1 >> position2;
+				while (position1 > 10 || position2 > 10 || position1 < 1 || position2 < 1)
+				{
+					cout << "Invalid coordinates to fire please input a correct scope of attack" << endl;
+					cin >> position1 >> position2;
+				}
+
+				if (BoardP2[position1][position2] != ' ')
+				{
+					cout << "You have hit an enemy ship uploading to table" << endl;
+					BoardGuessP1[position1][position2] = 'X';
+					BoardP2[position1][position2] = 'X';
+				}
+				else
+				{
+					cout << "You have missed" << endl;
+					BoardGuessP1[position1][position2] = 'O';
+					BoardP2[position1][position2] = 'O';
+				}
+
+				cout << "Player 2 take your shot" << endl;
+
+				Display(BoardGuessP2, SIZE);
+				Display(BoardP2, SIZE);
+				cout << "Please enter the coordinates of where you wish to fire" << endl;
+				cin >> temp >> position2;
+				position1 = charToInt(temp);
+				//cin >> position1 >> position2;
+				while (position1 > 10 || position2 > 10 || position1 < 1 || position2 < 1)
+				{
+					cout << "Invalid coordinates to fire please input a correct scope of attack" << endl;
+					cin >> temp >> position2;
+					position1 = charToInt(temp);
+					//cin >> position1 >> position2;
+				}
+
+				if (BoardP1[position1][position2] != ' ')
+				{
+					cout << "You have hit an enemy ship uploading to table" << endl;
+					BoardGuessP2[position1][position2] = 'X';
+					BoardP1[position1][position2] = 'X';
+				}
+				else
+				{
+					cout << "You have missed" << endl;
+					BoardGuessP1[position1][position2] = 'O';
+					BoardP1[position1][position2] = 'O';
+				}
+				for (int i = 0; i < SIZE; i++)
+				{
+					for (int j = 0; j < SIZE; j++)
+					{
+						if (BoardP1[i][j] != ' ' && BoardP1[i][j] != 'X' && BoardP1[i][j] != 'O')
+						{
+							flag = false;
+						}
+						else
+						{
+							flag = true;
+							cout << "Winner is player 2" << endl;
+						}
+
+						if (BoardP2[i][j] != ' ' && BoardP1[i][j] != 'X' && BoardP1[i][j] != 'O')
+						{
+							flag = false;
+						}
+						else
+						{
+							flag = true;
+							cout << "Winner is player 1" << endl;
+						}
+					}
+
+				}
+
+				if (flag = true)
+				{
+					break;
+				}
+
+			}*/
+		}
+		else if (choice == 3)
+		{
+			if (loadGame(BoardP1, BoardP2, BoardGuessP1, BoardGuessP2, SIZE) == true)
+			{
+				playGame(BoardP1, BoardP2, BoardGuessP1, BoardGuessP2, SIZE);
+				system("PAUSE");
+				system("cls");
+			}
+			else
+			{
+				system("PAUSE");
+				system("cls");
+			}
+		}
+		else if (choice == 4)
+		{
+			cout << "Goodbye.\n";
+			system("pause");
+			return 0;
+		}
+	}
+	
 	system("pause");
 	return 0;
- }
+}
 
 void Display(char Board[][10], int SIZE)
 {
@@ -806,13 +813,13 @@ void Display(char Board[][10], int SIZE)
 	}
 	//----------------------------------
 	cout << "\n        -----------------------------------------" << endl;
-	
+
 	for (int i = 0; i < SIZE; i++)
 	{
 		cout << "     " << Alphabet[i] << "  ";// up and down
 		for (int j = 0; j < SIZE; j++)
 		{
-			cout <<"| " << Board[i][j]<< " ";
+			cout << "| " << Board[i][j] << " ";
 		}
 		cout << "|";
 		cout << endl;
@@ -860,7 +867,7 @@ void Shipplacement(char Board[][10], int SIZE)
 	cout << "Submarine has been deployed" << endl;
 	system("pause");
 	system("cls");
-	
+
 	DisplayBattleship();
 
 
@@ -927,7 +934,8 @@ void displayMenu()
 	cout << "                                                               Welcome to the game Battleship " << endl;
 	cout << "                                                               1. 1- Player vs AI" << endl;
 	cout << "                                                               2. 2-Player" << endl;
-	cout << "                                                               3. Exit" << endl;
+	cout << "                                                               3. Load Game" << endl;
+	cout << "                                                               4. Exit" << endl;
 }
 
 int charToInt(char x)
@@ -974,5 +982,203 @@ int charToInt(char x)
 	case 'J':
 		return 9;
 		break;
+	}
+}
+
+void saveGame(char  board1[][10], char board2[][10], char boardGuess1[][10], char boardGuess2[][10], int size)
+{
+	ofstream outfile;
+
+	string saveName;
+	cout << "Enter name for save file (No spaces or special characters): ";
+	cin.clear();
+	cin >> saveName;
+
+	saveName += ".txt";
+
+	outfile.open(saveName);
+
+	for (int i = 0; i < size; i++)
+	{
+		for (int j = 0; j < size; j++)
+		{
+			if (board1[i][j] == ' ')
+				outfile << '\b';
+			else
+				outfile << board1[i][j];
+
+			if (board2[i][j] == ' ')
+				outfile << '\b';
+			else
+				outfile << board2[i][j];
+
+			if (boardGuess1[i][j] == ' ')
+				outfile << '\b';
+			else
+				outfile << boardGuess1[i][j];
+
+			if (boardGuess2[i][j] == ' ')
+				outfile << '\b';
+			else
+				outfile << boardGuess2[i][j];
+		}
+	}
+
+	cout << "Gave Saved." << endl;
+
+	outfile.close();
+}
+
+bool loadGame(char  board1[][10], char board2[][10], char boardGuess1[][10], char boardGuess2[][10], int size)
+{
+	ifstream infile;
+
+	string loadName;
+	cout << "Enter the name of the game file you wish to load: ";
+	cin.clear();
+	cin >> loadName;
+	
+	infile.open(loadName);
+
+
+	if (!infile)
+	{
+		cout << "Save file does not exist." << endl;
+		infile.close();
+		return false;
+	}
+	
+	for (int i = 0; i < size; i++)
+	{
+		for (int j = 0; j < size; j++)
+		{
+			infile >> board1[i][j];
+			if (board1[i][j] == '\b')
+				board1[i][j] = ' ';
+
+			infile >> board2[i][j];
+			if (board2[i][j] == '\b')
+				board2[i][j] = ' ';
+
+			infile >> boardGuess1[i][j];
+			if (boardGuess1[i][j] == '\b')
+				boardGuess1[i][j] = ' ';
+
+			infile >> boardGuess2[i][j];
+			if (boardGuess2[i][j] == '\b')
+				boardGuess2[i][j] = ' ';
+		}
+	}
+
+	infile.close();
+	return true;
+}
+
+void playGame(char BoardP1[][10], char BoardP2[][10], char BoardGuessP1[][10], char BoardGuessP2[][10], int SIZE)
+{
+	while (true)
+	{
+		char temp;
+		int position1, position2;
+		bool flag = false;
+
+		cout << "Player 1 take your shot" << endl;
+		Display(BoardGuessP1, SIZE);
+		Display(BoardP1, SIZE);
+		cout << "Please enter the coordinates of where you wish to fire or enter 'x' to save" << endl;
+		cin >> temp;
+		while (temp == 'x' || temp == 'X')
+		{
+			saveGame(BoardP1, BoardP2, BoardGuessP1, BoardGuessP2, SIZE);
+			cin >> temp;
+		}
+		cin >> position2;
+		position1 = charToInt(temp);
+		//cin >> position1 >> position2;
+		while (position1 > 10 || position2 > 10 || position1 < 1 || position2 < 1)
+		{
+			cout << "Invalid coordinates to fire please input a correct scope of attack" << endl;
+			cin >> position1 >> position2;
+		}
+
+		if (BoardP2[position1][position2] != ' ')
+		{
+			cout << "You have hit an enemy ship uploading to table" << endl;
+			BoardGuessP1[position1][position2] = 'X';
+			BoardP2[position1][position2] = 'X';
+		}
+		else
+		{
+			cout << "You have missed" << endl;
+			BoardGuessP1[position1][position2] = 'O';
+			BoardP2[position1][position2] = 'O';
+		}
+
+		cout << "Player 2 take your shot" << endl;
+
+		Display(BoardGuessP2, SIZE);
+		Display(BoardP2, SIZE);
+		cout << "Please enter the coordinates of where you wish to fire or enter 'x' to save" << endl;
+		cin >> temp;
+		while (temp == 'x' || temp == 'X')
+		{
+			saveGame(BoardP1, BoardP2, BoardGuessP1, BoardGuessP2, SIZE);
+			cin >> temp;
+		}
+		cin >> position2;
+		position1 = charToInt(temp);
+		//cin >> position1 >> position2;
+		while (position1 > 10 || position2 > 10 || position1 < 1 || position2 < 1)
+		{
+			cout << "Invalid coordinates to fire please input a correct scope of attack" << endl;
+			cin >> temp >> position2;
+			position1 = charToInt(temp);
+			//cin >> position1 >> position2;
+		}
+
+		if (BoardP1[position1][position2] != ' ')
+		{
+			cout << "You have hit an enemy ship uploading to table" << endl;
+			BoardGuessP2[position1][position2] = 'X';
+			BoardP1[position1][position2] = 'X';
+		}
+		else
+		{
+			cout << "You have missed" << endl;
+			BoardGuessP1[position1][position2] = 'O';
+			BoardP1[position1][position2] = 'O';
+		}
+		for (int i = 0; i < SIZE; i++)
+		{
+			for (int j = 0; j < SIZE; j++)
+			{
+				if (BoardP1[i][j] != ' ' && BoardP1[i][j] != 'X' && BoardP1[i][j] != 'O')
+				{
+					flag = false;
+				}
+				else
+				{
+					flag = true;
+					cout << "Winner is player 2" << endl;
+				}
+
+				if (BoardP2[i][j] != ' ' && BoardP1[i][j] != 'X' && BoardP1[i][j] != 'O')
+				{
+					flag = false;
+				}
+				else
+				{
+					flag = true;
+					cout << "Winner is player 1" << endl;
+				}
+			}
+
+		}
+
+		if (flag = true)
+		{
+			break;
+		}
+
 	}
 }
