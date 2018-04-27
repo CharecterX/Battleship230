@@ -6,6 +6,7 @@
 #include <ctime>
 #include <stdlib.h>
 #include <fstream>
+#include <cstring>
 
 using namespace std;
 
@@ -48,12 +49,15 @@ public:
 	{
 		cout << "Where do you want the Aircraft Carrier to face North, East, South, or West" << endl;
 		cin >> yposition;
-		while ((yposition == "North" || yposition == "north" || yposition == "N") && xposition1 <4)
+		while (((yposition == "North" || yposition == "north" || yposition == "N") && xposition1 <4) || 
+			   ((yposition == "East" || yposition == "east" || yposition == "E") && xposition2 > 6) ||
+			   ((yposition == "South" || yposition == "south" || yposition == "S") && xposition1 > 5) ||
+			   ((yposition == "West" || yposition == "west" || yposition == "w") && xposition2 < 4))
 		{
 			cout << "The Aircraft carrier will not fit within the tiles" << endl;
 			cin >> yposition;
 		}
-		while ((yposition == "East" || yposition == "east" || yposition == "E") && xposition2 > 6)
+	/*	while ((yposition == "East" || yposition == "east" || yposition == "E") && xposition2 > 6)
 		{
 			cout << "The Aircraft carrier will not fit within the tiles" << endl;
 			cin >> yposition;
@@ -67,13 +71,13 @@ public:
 		{
 			cout << "The Aircraft carrier will not fit within the tiles" << endl;
 			cin >> yposition;
-		}
+		}*/
 		if (yposition == "North" || yposition == "north" || yposition == "N")
 		{
 			for (int i = 0; i < 5; i++)
 			{
 				Board[xposition1 - i][xposition2] = 'A';
-				
+
 			}
 		}
 		else if (yposition == "East" || yposition == "east" || yposition == "E")
@@ -81,7 +85,7 @@ public:
 			for (int i = 0; i < 5; i++)
 			{
 				Board[xposition1][xposition2 + i] = 'A';
-				
+
 			}
 		}
 		else if (yposition == "West" || yposition == "west" || yposition == "w")
@@ -89,7 +93,7 @@ public:
 			for (int i = 0; i < 5; i++)
 			{
 				Board[xposition1][xposition2 - i] = 'A';
-				
+
 			}
 		}
 		else if (yposition == "South" || yposition == "south" || yposition == "s")
@@ -97,7 +101,7 @@ public:
 			for (int i = 0; i < 5; i++)
 			{
 				Board[xposition1 + i][xposition2] = 'A';
-				
+
 			}
 		}
 		else
@@ -146,41 +150,41 @@ public:
 					cout << "Invalid Deployment currently there is a ship there" << endl;
 					cin >> yposition;
 				}
-				
+
 			}
 		}
 		if (yposition == "East" || yposition == "east" || yposition == "E")
 		{
 			for (int i = 0; i <4; i++)
 			{
-				
+
 				if (Board[xposition1][xposition2 + i] == 'A')
 				{
 					cout << "Invalid Deployment currently there is a ship there" << endl;
 					cin >> yposition;
 				}
-				
-				
+
+
 			}
 		}
 		if (yposition == "West" || yposition == "west" || yposition == "w")
 		{
 			for (int i = 0; i <4; i++)
 			{
-				
+
 				if (Board[xposition1][xposition2 - i] == 'A')
 				{
 					cout << "Invalid Deployment currently there is a ship there" << endl;
 					cin >> yposition;
 				}
-			
+
 			}
 		}
 		if (yposition == "South" || yposition == "south" || yposition == "s")
 		{
 			for (int i = 0; i <4; i++)
 			{
-				
+
 				if (Board[xposition1 + i][xposition2] == 'A')
 				{
 					cout << "Invalid Deployment currently there is a ship there" << endl;
@@ -274,7 +278,7 @@ public:
 		cin >> yposition;
 		//validation for the cruiser and ship placements////////////////////////////////////////////////////////////////////
 		//if (yposition == "North" || yposition == "north" || yposition == "N" || yposition == "East" || yposition == "east" || yposition == "E" || yposition == "West" || yposition == "west" || yposition == "w" || yposition == "South" || yposition == "south" || yposition == "south")
-		if(yposition == "North" || yposition == "north" || yposition == "N")
+		if (yposition == "North" || yposition == "north" || yposition == "N")
 		{
 			for (int i = 0; i <3; i++)
 			{
@@ -283,20 +287,20 @@ public:
 					cout << "Invalid Deployment currently there is a ship there" << endl;
 					cin >> yposition;
 				}
-				
+
 			}
 		}
 		if (yposition == "East" || yposition == "east" || yposition == "E")
 		{
 			for (int i = 0; i < 3; i++)
 			{
-				
+
 				if (Board[xposition1][xposition2 + i] == 'A' || Board[xposition1][xposition2 + i] == 'B')
 				{
 					cout << "Invalid Deployment currently there is a ship there" << endl;
 					cin >> yposition;
 				}
-				
+
 			}
 		}
 		if (yposition == "West" || yposition == "west" || yposition == "w")
@@ -408,7 +412,8 @@ public:
 		cout << "Where do you want the Submarine to face North, East, South, or West" << endl;
 		cin >> yposition;
 		//validation for the cruiser and ship placements////////////////////////////////////////////////////////////////////
-		if (yposition == "North" || yposition == "north" || yposition == "N" || yposition == "East" || yposition == "east" || yposition == "E" || yposition == "West" || yposition == "west" || yposition == "w" || yposition == "South" || yposition == "south" || yposition == "south")
+		//if (yposition == "North" || yposition == "north" || yposition == "N" || yposition == "East" || yposition == "east" || yposition == "E" || yposition == "West" || yposition == "west" || yposition == "w" || yposition == "South" || yposition == "south" || yposition == "south")
+		if(yposition == "North" || yposition == "north" || yposition == "N")
 		{
 			for (int i = 0; i <3; i++)
 			{
@@ -417,16 +422,34 @@ public:
 					cout << "Invalid Deployment currently there is a ship there" << endl;
 					cin >> yposition;
 				}
+			}
+		}
+		if (yposition == "East" || yposition == "east" || yposition == "E")
+		{
+			for (int i = 0; i <3; i++)
+			{
 				if (Board[xposition1][xposition2 + i] == 'A' || Board[xposition1][xposition2 + i] == 'B' || Board[xposition1 - i][xposition2] == 'C')
 				{
 					cout << "Invalid Deployment currently there is a ship there" << endl;
 					cin >> yposition;
 				}
+			}
+		}
+		if (yposition == "West" || yposition == "west" || yposition == "w")
+		{
+			for (int i = 0; i <3; i++)
+			{
 				if (Board[xposition1][xposition2 - i] == 'A' || Board[xposition1][xposition2 - i] == 'B' || Board[xposition1 - i][xposition2] == 'C')
 				{
 					cout << "Invalid Deployment currently there is a ship there" << endl;
 					cin >> yposition;
 				}
+			}
+		}
+		if (yposition == "South" || yposition == "south" || yposition == "south")
+		{
+			for (int i = 0; i <3; i++)
+			{
 				if (Board[xposition1 + i][xposition2] == 'A' || Board[xposition1 + i][xposition2] == 'B' || Board[xposition1 - i][xposition2] == 'C')
 				{
 					cout << "Invalid Deployment currently there is a ship there" << endl;
@@ -515,7 +538,8 @@ public:
 		cout << "Where do you want the Destroyer to face North, East, South, or West" << endl;
 		cin >> yposition;
 		//validation for the cruiser and ship placements////////////////////////////////////////////////////////////////////
-		if (yposition == "North" || yposition == "north" || yposition == "N" || yposition == "East" || yposition == "east" || yposition == "E" || yposition == "West" || yposition == "west" || yposition == "w" || yposition == "South" || yposition == "south" || yposition == "south")
+		//if (yposition == "North" || yposition == "north" || yposition == "N" || yposition == "East" || yposition == "east" || yposition == "E" || yposition == "West" || yposition == "west" || yposition == "w" || yposition == "South" || yposition == "south" || yposition == "south")
+		if(yposition == "North" || yposition == "north" || yposition == "N")
 		{
 			for (int i = 0; i <2; i++)
 			{
@@ -524,16 +548,37 @@ public:
 					cout << "Invalid Deployment currently there is a ship there" << endl;
 					cin >> yposition;
 				}
+			}
+		}
+		if (yposition == "East" || yposition == "east" || yposition == "E")
+		{
+			for (int i = 0; i <2; i++)
+			{
 				if (Board[xposition1][xposition2 + i] == 'A' || Board[xposition1][xposition2 + i] == 'B' || Board[xposition1 - i][xposition2] == 'C' || Board[xposition1 - i][xposition2] == 'S')
 				{
 					cout << "Invalid Deployment currently there is a ship there" << endl;
 					cin >> yposition;
 				}
+
+			}
+		}
+		if (yposition == "West" || yposition == "west" || yposition == "w")
+		{
+			for (int i = 0; i <2; i++)
+			{
+
 				if (Board[xposition1][xposition2 - i] == 'A' || Board[xposition1][xposition2 - i] == 'B' || Board[xposition1 - i][xposition2] == 'C' || Board[xposition1 - i][xposition2] == 'S')
 				{
 					cout << "Invalid Deployment currently there is a ship there" << endl;
 					cin >> yposition;
 				}
+
+			}
+		}
+		if (yposition == "South" || yposition == "south" || yposition == "S")
+		{
+			for (int i = 0; i <2; i++)
+			{
 				if (Board[xposition1 + i][xposition2] == 'A' || Board[xposition1 + i][xposition2] == 'B' || Board[xposition1 - i][xposition2] == 'C' || Board[xposition1 - i][xposition2] == 'S')
 				{
 					cout << "Invalid Deployment currently there is a ship there" << endl;
@@ -737,90 +782,7 @@ int main()
 			playGame(BoardP1, BoardP2, BoardGuessP1, BoardGuessP2, SIZE);
 			system("PAUSE");
 			system("cls");
-			/*while (true)
-			{
-			char temp;
-			int position1, position2;
-			bool flag = false;
-			cout << "Player 1 take your shot" << endl;
-			Display(BoardGuessP1, SIZE);
-			Display(BoardP1, SIZE);
-			cout << "Please enter the coordinates of where you wish to fire" << endl;
-			cin >> temp >> position2;
-			position1 = charToInt(temp);
-			//cin >> position1 >> position2;
-			while (position1 > 10 || position2 > 10 || position1 < 1 || position2 < 1)
-			{
-			cout << "Invalid coordinates to fire please input a correct scope of attack" << endl;
-			cin >> position1 >> position2;
-			}
-			if (BoardP2[position1][position2] != ' ')
-			{
-			cout << "You have hit an enemy ship uploading to table" << endl;
-			BoardGuessP1[position1][position2] = 'X';
-			BoardP2[position1][position2] = 'X';
-			}
-			else
-			{
-			cout << "You have missed" << endl;
-			BoardGuessP1[position1][position2] = 'O';
-			BoardP2[position1][position2] = 'O';
-			}
-			cout << "Player 2 take your shot" << endl;
-			Display(BoardGuessP2, SIZE);
-			Display(BoardP2, SIZE);
-			cout << "Please enter the coordinates of where you wish to fire" << endl;
-			cin >> temp >> position2;
-			position1 = charToInt(temp);
-			//cin >> position1 >> position2;
-			while (position1 > 10 || position2 > 10 || position1 < 1 || position2 < 1)
-			{
-			cout << "Invalid coordinates to fire please input a correct scope of attack" << endl;
-			cin >> temp >> position2;
-			position1 = charToInt(temp);
-			//cin >> position1 >> position2;
-			}
-			if (BoardP1[position1][position2] != ' ')
-			{
-			cout << "You have hit an enemy ship uploading to table" << endl;
-			BoardGuessP2[position1][position2] = 'X';
-			BoardP1[position1][position2] = 'X';
-			}
-			else
-			{
-			cout << "You have missed" << endl;
-			BoardGuessP1[position1][position2] = 'O';
-			BoardP1[position1][position2] = 'O';
-			}
-			for (int i = 0; i < SIZE; i++)
-			{
-			for (int j = 0; j < SIZE; j++)
-			{
-			if (BoardP1[i][j] != ' ' && BoardP1[i][j] != 'X' && BoardP1[i][j] != 'O')
-			{
-			flag = false;
-			}
-			else
-			{
-			flag = true;
-			cout << "Winner is player 2" << endl;
-			}
-			if (BoardP2[i][j] != ' ' && BoardP1[i][j] != 'X' && BoardP1[i][j] != 'O')
-			{
-			flag = false;
-			}
-			else
-			{
-			flag = true;
-			cout << "Winner is player 1" << endl;
-			}
-			}
-			}
-			if (flag = true)
-			{
-			break;
-			}
-			}*/
+			
 		}
 		else if (choice == 3)
 		{
@@ -904,14 +866,14 @@ void Shipplacement(char Board[][10], int SIZE)
 	Battleship.setypositionCruiser(Board, SIZE);
 	Display(Board, SIZE);
 	cout << "Cruiser has been placed" << endl;
-	Battleship.SetxpositionDestroyer(Board);
-	Battleship.SetypositionDestroyer(Board, SIZE);
-	Display(Board, SIZE);
-	cout << "Destroyer has been deployed" << endl;
 	Battleship.SetxpositionSubmarine(Board);
 	Battleship.SetypositionSubmarine(Board, SIZE);
 	Display(Board, SIZE);
 	cout << "Submarine has been deployed" << endl;
+	Battleship.SetxpositionDestroyer(Board);
+	Battleship.SetypositionDestroyer(Board, SIZE);
+	Display(Board, SIZE);
+	cout << "Destroyer has been deployed" << endl;
 	system("pause");
 	system("cls");
 
@@ -937,14 +899,15 @@ void Shipplacement2(char Board[][10], int SIZE)
 	Battleship.setypositionCruiser(Board, SIZE);
 	Display(Board, SIZE);
 	cout << "Cruiser has been placed" << endl;
-	Battleship.SetxpositionDestroyer(Board);
-	Battleship.SetypositionDestroyer(Board, SIZE);
-	Display(Board, SIZE);
-	cout << "Destroyer has been deployed" << endl;
 	Battleship.SetxpositionSubmarine(Board);
 	Battleship.SetypositionSubmarine(Board, SIZE);
 	Display(Board, SIZE);
 	cout << "Submarine has been deployed" << endl;
+	Battleship.SetxpositionDestroyer(Board);
+	Battleship.SetypositionDestroyer(Board, SIZE);
+	Display(Board, SIZE);
+	cout << "Destroyer has been deployed" << endl;
+
 	system("pause");
 	system("cls");
 	DisplayBattleship();
@@ -1041,6 +1004,14 @@ void saveGame(char  board1[][10], char board2[][10], char boardGuess1[][10], cha
 	cin.clear();
 	cin >> saveName;
 
+	for (int i = 0; i < saveName.length(); i++)
+	{
+		if (!isalpha(saveName[i]))
+		{
+			saveName[i] = '\b';
+		}
+	}
+
 	saveName += ".txt";
 
 	outfile.open(saveName);
@@ -1072,6 +1043,7 @@ void saveGame(char  board1[][10], char board2[][10], char boardGuess1[][10], cha
 	}
 
 	cout << "Gave Saved." << endl;
+	cout << "Please enter the coordinates of where you wish to fire or enter 'x' to save" << endl;
 
 	outfile.close();
 }
@@ -1085,8 +1057,12 @@ bool loadGame(char  board1[][10], char board2[][10], char boardGuess1[][10], cha
 	cin.clear();
 	cin >> loadName;
 
-	infile.open(loadName);
+	if (loadName.find(".txt") > loadName.length())
+	{
+		loadName += ".txt";
+	}
 
+	infile.open(loadName);
 
 	if (!infile)
 	{
@@ -1176,7 +1152,7 @@ void playGame(char BoardP1[][10], char BoardP2[][10], char BoardGuessP1[][10], c
 		cin >> position2;
 		position1 = charToInt(temp);
 		//cin >> position1 >> position2;
-		while (position1 > 10 || position2 > 10 || position1 < 1 || position2 < 1)
+		while (position1 > 10 || position2 > 10 || position1 < 0 || position2 < 0)
 		{
 			cout << "Invalid coordinates to fire please input a correct scope of attack" << endl;
 			cin >> temp >> position2;
