@@ -14,12 +14,14 @@ using namespace std;
 void Display(char Board[][10], int SIZE);
 void CreateBoard(char Board[][10], int SIZE);
 void Shipplacement(char Board[][10], int SIZE, int playerNum);
+void ShipPlacementAI(char Board[][10], int SIZE);
 void displayMenu();
 void DisplayBattleship();
 int charToInt(char);
 bool loadGame(char board1[][10], char board2[][10], char boardGuess1[][10], char boardGuess2[][10], int size, int &);
 void saveGame(char board1[][10], char board2[][10], char boardGuess1[][10], char boardGuess2[][10], int size, int);
 void playGame(char BoardP1[][10], char BoardP2[][10], char BoardGuessP1[][10], char BoardGuessP2[][10], int SIZE, int);
+void playGameVai(char BoardP1[][10], char BoardP2[][10], char BoardGuessP1[][10], char BoardGuessP2[][10], int SIZE);
 // -----------------------------------------------------------------------------------------------------------------------
 
 // -- Pure Abstract Class Declaration ----------------------------------------------
@@ -66,19 +68,9 @@ public:
 // -- Battleship AI class : inherits General ship Placement Class --------------------------
 class Battleshipai : public GeneralShipPlacement
 {
-private:
-	int number;
 public:
-	void setNumber()
-	{
-		number = rand() % 10 + 1;
-	}
-	int getNUmber()
-	{
-		return number;
-	}
-	void CheckSurvival(const char Boardp1[][10], int SIZE);
-	void ShotPosition1(char BoardGuess[][10]);
+	string generateDirection();
+	
 	virtual void SetxpositionAircraft(char Board[][10], int SIZE);
 	virtual void SetypositionAircraft(char Board[][10], int SIZE);
 	virtual void SetxpositionBattleship(char Board[][10], int SIZE);
@@ -120,7 +112,14 @@ int main()
 
 		if (choice == 1) // choice 1 plays vs. AI
 		{
-			cout << "Single player Vs. AI Coming soon." << endl;
+			// fills all boards with blank values
+			CreateBoard(BoardP1, SIZE);
+			CreateBoard(BoardGuessP1, SIZE);
+			CreateBoard(BoardP2, SIZE);
+			CreateBoard(BoardGuessP2, SIZE);
+			Shipplacement(BoardP1, SIZE, 1); // ship placement for player 1
+			ShipPlacementAI(BoardP2, SIZE);  // ship placement for computer
+			playGameVai(BoardP1, BoardP2, BoardGuessP1, BoardGuessP2, SIZE);  // Plays the game 
 			system("PAUSE");
 			system("cls");
 		}
@@ -145,7 +144,11 @@ int main()
 			if (loadGame(BoardP1, BoardP2, BoardGuessP1, BoardGuessP2, SIZE, currentPlayerTurn) == true)
 			{
 				// if so, plays the game 
-				playGame(BoardP1, BoardP2, BoardGuessP1, BoardGuessP2, SIZE, currentPlayerTurn);
+				if (currentPlayerTurn == 0)
+					playGameVai(BoardP1, BoardP2, BoardGuessP1, BoardGuessP2, SIZE);
+				else
+					playGame(BoardP1, BoardP2, BoardGuessP1, BoardGuessP2, SIZE, currentPlayerTurn);
+				
 				system("PAUSE");
 				system("cls");
 			}
@@ -237,6 +240,33 @@ void Shipplacement(char Board[][10], int SIZE, int playerNum)
 	Battleship.SetypositionDestroyer(Board, SIZE);
 	Display(Board, SIZE);
 	cout << "Destroyer has been deployed" << endl;
+	// --------------------------------------------------------------------------
+	system("pause");
+	system("cls");
+	DisplayBattleship();
+}
+void ShipPlacementAI(char Board[][10], int SIZE)
+{
+	// creates object for ship placement
+	Battleshipai Battleship;
+	// calls all member fuctions in Ship Placement class to set ships ---------
+	cout << "COMPUTER IS PLACING SHIPS" << endl;
+	Battleship.SetxpositionAircraft(Board, SIZE);
+	Battleship.SetypositionAircraft(Board, SIZE);
+	cout << "Aircraft Carrier has been placed" << endl;
+	Battleship.SetxpositionBattleship(Board, SIZE);
+	Battleship.SetypositionBattleship(Board, SIZE);
+	cout << "Battleship has been placed" << endl;
+	Battleship.SetxpositionCruiser(Board);
+	Battleship.setypositionCruiser(Board, SIZE);
+	cout << "Cruiser has been placed" << endl;
+	Battleship.SetxpositionSubmarine(Board);
+	Battleship.SetypositionSubmarine(Board, SIZE);
+	cout << "Submarine has been deployed" << endl;
+	Battleship.SetxpositionDestroyer(Board);
+	Battleship.SetypositionDestroyer(Board, SIZE);
+	cout << "Destroyer has been deployed" << endl;
+	cout << "COMPUTER SHIPS ARE IN PLACE" << endl;
 	// --------------------------------------------------------------------------
 	system("pause");
 	system("cls");
@@ -579,6 +609,126 @@ void playGame(char BoardP1[][10], char BoardP2[][10], char BoardGuessP1[][10], c
 		playerTurn = 1; // sets player turn to 1 after player 2 is done
 						//-----------------------------------------------------------------------------------
 						// --------------------------------------------------------------------------------------------------------
+	}
+}
+void playGameVai(char BoardP1[][10], char BoardP2[][10], char BoardGuessP1[][10], char BoardGuessP2[][10], int SIZE)
+{
+	srand(time(0));
+	while (true)
+	{
+		// variables for input and couter for win condition 
+		char temp;
+		int position1, position2, counter;
+
+			// PLAYER ONE'S TURN -------------------------------------------------------------------------
+			cout << "Player 1 take your shot" << endl;
+			// display boards
+			Display(BoardGuessP1, SIZE);
+			Display(BoardP1, SIZE);
+			cout << "Please enter the coordinates of where you wish to fire or enter 'x' to save" << endl;
+			// gets y coordinate
+			cin >> temp;
+			// if input x save game
+			while (temp == 'x' || temp == 'X')
+			{
+				saveGame(BoardP1, BoardP2, BoardGuessP1, BoardGuessP2, SIZE, 0);
+				cin >> temp;
+			}
+			// get x coordinate
+			cin >> position2;
+			position1 = charToInt(temp);
+			//error catching
+			while (position1 > 10 || position2 > 10 || position1 < 0 || position2 < 0 || BoardP2[position1][position2] == 'X' || BoardP2[position1][position2] == 'O')
+			{
+				cout << "Invalid coordinates to fire please input a correct scope of attack" << endl;
+				cin >> temp >> position2;
+				position1 = charToInt(temp);
+			}
+			// hit / miss checks
+			if (BoardP2[position1][position2] != ' ')
+			{
+				system("cls");
+				cout << "You have hit an enemy ship uploading to table" << endl;
+				BoardGuessP1[position1][position2] = 'X';
+				BoardP2[position1][position2] = 'X';
+				system("PAUSE");
+			}
+			else
+			{
+				system("cls");
+				cout << "You have missed" << endl;
+				BoardGuessP1[position1][position2] = 'O';
+				BoardP2[position1][position2] = 'O';
+				system("PAUSE");
+			}
+
+			// Check for win ------------------------------------------------------------------
+			counter = 0;
+			for (int i = 0; i < SIZE; i++)
+			{
+				for (int j = 0; j < SIZE; j++)
+				{
+					if (BoardP2[i][j] != ' ' && BoardP2[i][j] != 'X' && BoardP2[i][j] != 'O')
+					{
+						counter++;
+					}
+				}
+			}
+			if (counter == 0)
+			{
+				cout << endl << endl << "PLAYER ONE WINS!" << endl << endl;
+				break;
+			}
+		
+		//-----------------------------------------------------------------------------------
+		// --------------------------------------------------------------------------------------------------------
+
+		// COMPUTER'S TURN --------------------------------------------------------------------------------------
+		// get x and y coordinate
+		position2 = rand() % 10;
+		position1 = rand() % 10;
+		// error catching
+		while (position1 > 10 || position2 > 10 || position1 < 0 || position2 < 0 || BoardP1[position1][position2] == 'X' || BoardP1[position1][position2] == 'O')
+		{
+			position2 = rand() % 10;
+			position1 = rand() % 10;
+		}
+		// hit/ miss checks
+		if (BoardP1[position1][position2] != ' ')
+		{
+			system("cls");
+			cout << "You have been hit! uploading to table." << endl;
+			BoardGuessP2[position1][position2] = 'X';
+			BoardP1[position1][position2] = 'X';
+			system("PAUSE");
+		}
+		else
+		{
+			system("cls");
+			cout << "The enemy missed" << endl;
+			BoardGuessP2[position1][position2] = 'O';
+			BoardP1[position1][position2] = 'O';
+			system("PAUSE");
+		}
+		// Check for win ------------------------------------------------------------------
+		counter = 0;
+		for (int i = 0; i < SIZE; i++)
+		{
+			for (int j = 0; j < SIZE; j++)
+			{
+				if (BoardP1[i][j] != ' ' && BoardP1[i][j] != 'X' && BoardP1[i][j] != 'O')
+				{
+					counter++;
+				}
+			}
+		}
+		if (counter == 0)
+		{
+			cout << endl << endl << "THE ENEMY HAS WON!" << endl << endl;
+			break;
+		}
+		//-----------------------------------------------------------------------------------
+		// --------------------------------------------------------------------------------------------------------
 	}
 }
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -1187,129 +1337,551 @@ void ShipPlacement::SetypositionDestroyer(char Board[][10], int SIZE)
 // ----------------------------------------------------------------------------------
 
 // ----- Battle Ship AI class member fucntion implimentation ------------------------
-void Battleshipai::CheckSurvival(const char Boardp1[][10], int SIZE)
+string Battleshipai::generateDirection()
 {
-	bool Aircraftdestroyed = true;
-	bool Battleshipdestroyed = true;
-	bool Cruiserdestroyed = true;
-	bool Submarinedestroyed = true;
-	bool Destroyerdestroyed = true;
-	for (int i = 0; i < SIZE; i++)
+	switch (rand() % 4)
 	{
-		for (int j = 0; j < SIZE; j++)
-		{
-			if (Boardp1[i][j] == 'A')
-			{
-				Aircraftdestroyed = false;
-			}
-			if (Boardp1[i][j] == 'B')
-			{
-				Battleshipdestroyed = false;
-			}
-			if (Boardp1[i][j] == 'C')
-			{
-				Cruiserdestroyed = false;
-			}
-			if (Boardp1[i][j] == 'S')
-			{
-				Submarinedestroyed = false;
-			}
-			if (Boardp1[i][j] == 'D')
-			{
-				Destroyerdestroyed = false;
-			}
-		}
+	case 0: 
+		return "North";
+		break;
+	case 1:
+		return "East";
+		break;
+	case 2:
+		return "South";
+		break;
+	case 3:
+		return "West";
+		break;
 	}
-}
-void Battleshipai::ShotPosition1(char BoardGuess[][10])
-{
-	srand((unsigned)time(NULL));
-	char letterChoice;
-	int numberChoice, num;
-	do
-	{
-		num = rand() % 10;
-		numberChoice = rand() % 10;
-
-		switch (num)
-		{
-		case 0:
-			letterChoice = 'A';
-			break;
-		case 1:
-			letterChoice = 'B';
-			break;
-		case 2:
-			letterChoice = 'C';
-			break;
-		case 3:
-			letterChoice = 'D';
-			break;
-		case 4:
-			letterChoice = 'E';
-			break;
-		case 5:
-			letterChoice = 'F';
-			break;
-		case 6:
-			letterChoice = 'G';
-			break;
-		case 7:
-			letterChoice = 'H';
-			break;
-		case 8:
-			letterChoice = 'I';
-			break;
-		case 9:
-			letterChoice = 'J';
-			break;
-		}
-
-	} while (BoardGuess[num][numberChoice] == 'X' || BoardGuess[num][numberChoice] == 'O');
-
-	shotPosition1Ai = numberChoice;
-
-	shotPosition2ai = letterChoice;
 }
 
 void Battleshipai::SetxpositionAircraft(char Board[][10], int SIZE)
 {
-
+	srand(time(0));
+	xposition2 = rand() % 10;
+	xposition1 = rand() % 10;
+	cin.ignore(1);
+	while (xposition1 < 0 || xposition1 > 10)
+	{
+		xposition2 = rand() % 10;
+		xposition1 = rand() % 10;
+	}
 }
 void Battleshipai::SetypositionAircraft(char Board[][10], int SIZE)
 {
+	srand(time(0));
+	yposition = generateDirection();
+	while (((yposition == "North" || yposition == "north" || yposition == "N") && xposition1 <4) ||
+		((yposition == "East" || yposition == "east" || yposition == "E") && xposition2 > 6) ||
+		((yposition == "South" || yposition == "south" || yposition == "S") && xposition1 > 5) ||
+		((yposition == "West" || yposition == "west" || yposition == "w") && xposition2 < 4))
+	{
+		cout << "The Aircraft carrier will not fit within the tiles" << endl;
+		yposition = generateDirection();
+	}
+	if (yposition == "North" || yposition == "north" || yposition == "N")
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			Board[xposition1 - i][xposition2] = 'A';
 
+		}
+	}
+	else if (yposition == "East" || yposition == "east" || yposition == "E")
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			Board[xposition1][xposition2 + i] = 'A';
+
+		}
+	}
+	else if (yposition == "West" || yposition == "west" || yposition == "w")
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			Board[xposition1][xposition2 - i] = 'A';
+
+		}
+	}
+	else if (yposition == "South" || yposition == "south" || yposition == "s")
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			Board[xposition1 + i][xposition2] = 'A';
+
+		}
+	}
+	else
+	{
+		cout << "The Ship failed to place, Thats lucky for you\n";
+	}
 }
 void Battleshipai::SetxpositionBattleship(char Board[][10], int SIZE)
 {
+	srand(time(0));
+	xposition2 = rand() % 10;
+	xposition1 = rand() % 10;
+	while (Board[xposition1][xposition2] == 'A')
+	{
+		xposition2 = rand() % 10;
+		xposition1 = rand() % 10;
+	}
+
+	while (xposition1 < 0 || xposition1 > 10)
+	{
+		xposition2 = rand() % 10;
+		xposition1 = rand() % 10;
+	}
 
 }
 void Battleshipai::SetypositionBattleship(char Board[][10], int SIZE)
 {
+	srand(time(0));
+	yposition = generateDirection();
+	//validation the north south east and west for empty tiles
 
+	if (yposition == "North" || yposition == "north" || yposition == "N")
+	{
+		for (int i = 0; i <4; i++)
+		{
+			if (Board[xposition1 - i][xposition2] == 'A')
+			{
+				yposition = generateDirection();
+			}
+
+		}
+	}
+	if (yposition == "East" || yposition == "east" || yposition == "E")
+	{
+		for (int i = 0; i <4; i++)
+		{
+
+			if (Board[xposition1][xposition2 + i] == 'A')
+			{
+				yposition = generateDirection();
+			}
+
+
+		}
+	}
+	if (yposition == "West" || yposition == "west" || yposition == "w")
+	{
+		for (int i = 0; i <4; i++)
+		{
+
+			if (Board[xposition1][xposition2 - i] == 'A')
+			{
+				yposition = generateDirection();
+			}
+
+		}
+	}
+	if (yposition == "South" || yposition == "south" || yposition == "s")
+	{
+		for (int i = 0; i <4; i++)
+		{
+
+			if (Board[xposition1 + i][xposition2] == 'A')
+			{
+				yposition = generateDirection();
+			}
+		}
+	}
+
+	//end of the validation/////////////////////////////////////////////////////////////////////////// of the directions
+
+
+	//Validation for the squares
+	while ((yposition == "North" || yposition == "north" || yposition == "N") && xposition1 < 3)
+	{
+		yposition = generateDirection();
+	}
+	while ((yposition == "East" || yposition == "east" || yposition == "E") && xposition2 >7)
+	{
+		yposition = generateDirection();
+	}
+	while ((yposition == "South" || yposition == "south" || yposition == "south") && xposition1 > 7)
+	{
+		yposition = generateDirection();
+	}
+	while ((yposition == "West" || yposition == "west" || yposition == "w") && xposition2 < 3)
+	{
+		yposition = generateDirection();
+	}
+
+	//setting the squares to be the ships
+	if (yposition == "North" || yposition == "north" || yposition == "N")
+	{
+		for (int i = 0; i <4; i++)
+		{
+			Board[xposition1 - i][xposition2] = 'B';
+		}
+	}
+	else if (yposition == "East" || yposition == "east" || yposition == "E")
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			Board[xposition1][xposition2 + i] = 'B';
+		}
+	}
+
+	else if (yposition == "West" || yposition == "west" || yposition == "w")
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			Board[xposition1][xposition2 - i] = 'B';
+		}
+	}
+	else if (yposition == "South" || yposition == "south" || yposition == "south")
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			Board[xposition1 + i][xposition2] = 'B';
+		}
+	}
 }
 void Battleshipai::SetxpositionCruiser(char Board[][10])
 {
+	srand(time(0));
+	xposition2 = rand() % 10;
+	xposition1 = rand() % 10;
+	while (Board[xposition1][xposition2] == 'S' || Board[xposition1][xposition2] == 'B')
+	{
+		xposition2 = rand() % 10;
+		xposition1 = rand() % 10;
+	}
 
+	while (xposition1 < 0 || xposition1 > 10)
+	{
+		xposition2 = rand() % 10;
+		xposition1 = rand() % 10;
+	}
 }
 void Battleshipai::setypositionCruiser(char Board[][10], int SIZE)
 {
+	srand(time(0));
+	yposition = generateDirection();
+	//validation for the cruiser and ship placements////////////////////////////////////////////////////////////////////
+	//if (yposition == "North" || yposition == "north" || yposition == "N" || yposition == "East" || yposition == "east" || yposition == "E" || yposition == "West" || yposition == "west" || yposition == "w" || yposition == "South" || yposition == "south" || yposition == "south")
+	if (yposition == "North" || yposition == "north" || yposition == "N")
+	{
+		for (int i = 0; i <3; i++)
+		{
+			if (Board[xposition1 - i][xposition2] == 'A' || Board[xposition1 - i][xposition2] == 'B')
+			{
+				yposition = generateDirection();
+			}
 
+		}
+	}
+	if (yposition == "East" || yposition == "east" || yposition == "E")
+	{
+		for (int i = 0; i < 3; i++)
+		{
+
+			if (Board[xposition1][xposition2 + i] == 'A' || Board[xposition1][xposition2 + i] == 'B')
+			{
+				yposition = generateDirection();
+			}
+
+		}
+	}
+	if (yposition == "West" || yposition == "west" || yposition == "w")
+	{
+		for (int i = 0; i < 3; i++)
+		{
+
+
+			if (Board[xposition1][xposition2 - i] == 'A' || Board[xposition1][xposition2 - i] == 'B')
+			{
+				yposition = generateDirection();
+			}
+
+		}
+	}
+	if (yposition == "South" || yposition == "south" || yposition == "s")
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (Board[xposition1 + i][xposition2] == 'A' || Board[xposition1 + i][xposition2] == 'B')
+			{
+				yposition = generateDirection();
+			}
+		}
+	}
+
+	//Validation for the squares
+	while ((yposition == "North" || yposition == "north" || yposition == "N") && xposition1 < 3)
+	{
+		yposition = generateDirection();
+	}
+	while ((yposition == "East" || yposition == "east" || yposition == "E") && xposition2 > 7)
+	{
+		yposition = generateDirection();
+	}
+	while ((yposition == "South" || yposition == "south" || yposition == "south") && xposition1 > 7)
+	{
+		yposition = generateDirection();
+	}
+	while ((yposition == "West" || yposition == "west" || yposition == "w") && xposition2 < 3)
+	{
+		yposition = generateDirection();
+	}
+
+	if (yposition == "North" || yposition == "north" || yposition == "N")
+	{
+		for (int i = 0; i <3; i++)
+		{
+			Board[xposition1 - i][xposition2] = 'C';
+		}
+	}
+	else if (yposition == "East" || yposition == "east" || yposition == "E")
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			Board[xposition1][xposition2 + i] = 'C';
+		}
+	}
+
+	else if (yposition == "West" || yposition == "west" || yposition == "w")
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			Board[xposition1][xposition2 - i] = 'C';
+		}
+	}
+	else if (yposition == "South" || yposition == "south" || yposition == "south")
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			Board[xposition1 + i][xposition2] = 'C';
+		}
+	}
 }
 void Battleshipai::SetxpositionSubmarine(char Board[][10])
 {
+	srand(time(0));
+	xposition2 = rand() % 10;
+	xposition1 = rand() % 10;
+	while (Board[xposition1][xposition2] == 'S' || Board[xposition1][xposition2] == 'B' || Board[xposition1][xposition2] == 'C')
+	{
+		xposition2 = rand() % 10;
+		xposition1 = rand() % 10;
+	}
 
+	while (xposition1 < 0 || xposition1 > 10)
+	{
+		xposition2 = rand() % 10;
+		xposition1 = rand() % 10;
+	}
 }
 void Battleshipai::SetypositionSubmarine(char Board[][10], int SIZE)
 {
+	srand(time(0));
+	yposition = generateDirection();
+	//validation for the cruiser and ship placements////////////////////////////////////////////////////////////////////
+	//if (yposition == "North" || yposition == "north" || yposition == "N" || yposition == "East" || yposition == "east" || yposition == "E" || yposition == "West" || yposition == "west" || yposition == "w" || yposition == "South" || yposition == "south" || yposition == "south")
+	if (yposition == "North" || yposition == "north" || yposition == "N")
+	{
+		for (int i = 0; i <3; i++)
+		{
+			if (Board[xposition1 - i][xposition2] == 'A' || Board[xposition1 - i][xposition2] == 'B' || Board[xposition1 - i][xposition2] == 'C')
+			{
+				yposition = generateDirection();
+			}
+		}
+	}
+	if (yposition == "East" || yposition == "east" || yposition == "E")
+	{
+		for (int i = 0; i <3; i++)
+		{
+			if (Board[xposition1][xposition2 + i] == 'A' || Board[xposition1][xposition2 + i] == 'B' || Board[xposition1 - i][xposition2] == 'C')
+			{
+				yposition = generateDirection();
+			}
+		}
+	}
+	if (yposition == "West" || yposition == "west" || yposition == "w")
+	{
+		for (int i = 0; i <3; i++)
+		{
+			if (Board[xposition1][xposition2 - i] == 'A' || Board[xposition1][xposition2 - i] == 'B' || Board[xposition1 - i][xposition2] == 'C')
+			{
+				yposition = generateDirection();
+			}
+		}
+	}
+	if (yposition == "South" || yposition == "south" || yposition == "south")
+	{
+		for (int i = 0; i <3; i++)
+		{
+			if (Board[xposition1 + i][xposition2] == 'A' || Board[xposition1 + i][xposition2] == 'B' || Board[xposition1 - i][xposition2] == 'C')
+			{
+				yposition = generateDirection();
+			}
+		}
+	}
+	//Validation for the squares
+	while ((yposition == "North" || yposition == "north" || yposition == "N") && xposition1 < 3)
+	{
+		yposition = generateDirection();
+	}
+	while ((yposition == "East" || yposition == "east" || yposition == "E") && xposition2 > 7)
+	{
+		yposition = generateDirection();
+	}
+	while ((yposition == "South" || yposition == "south" || yposition == "south") && xposition1 > 7)
+	{
+		yposition = generateDirection();
+	}
+	while ((yposition == "West" || yposition == "west" || yposition == "w") && xposition2 < 3)
+	{
+		yposition = generateDirection();
+	}
 
+	if (yposition == "North" || yposition == "north" || yposition == "N")
+	{
+		for (int i = 0; i <3; i++)
+		{
+			Board[xposition1 - i][xposition2] = 'S';
+		}
+	}
+	else if (yposition == "East" || yposition == "east" || yposition == "E")
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			Board[xposition1][xposition2 + i] = 'S';
+		}
+	}
+
+	else if (yposition == "West" || yposition == "west" || yposition == "w")
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			Board[xposition1][xposition2 - i] = 'S';
+		}
+	}
+	else if (yposition == "South" || yposition == "south" || yposition == "south")
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			Board[xposition1 + i][xposition2] = 'S';
+		}
+	}
 }
 void Battleshipai::SetxpositionDestroyer(char Board[][10])
 {
+	srand(time(0));
+	xposition2 = rand() % 10;
+	xposition1 = rand() % 10;
+	while (Board[xposition1][xposition2] == 'S' || Board[xposition1][xposition2] == 'B' || Board[xposition1][xposition2] == 'C' || Board[xposition1][xposition2] == 'S')
+	{
+		xposition2 = rand() % 10;
+		xposition1 = rand() % 10;
+	}
 
+	while (xposition1 < 0 || xposition1 > 10)
+	{
+		xposition2 = rand() % 10;
+		xposition1 = rand() % 10;
+	}
 }
 void Battleshipai::SetypositionDestroyer(char Board[][10], int SIZE)
 {
+	srand(time(0));
+	yposition = generateDirection();
+	//validation for the cruiser and ship placements////////////////////////////////////////////////////////////////////
+	//if (yposition == "North" || yposition == "north" || yposition == "N" || yposition == "East" || yposition == "east" || yposition == "E" || yposition == "West" || yposition == "west" || yposition == "w" || yposition == "South" || yposition == "south" || yposition == "south")
+	if (yposition == "North" || yposition == "north" || yposition == "N")
+	{
+		for (int i = 0; i <2; i++)
+		{
+			if (Board[xposition1 - i][xposition2] == 'A' || Board[xposition1 - i][xposition2] == 'B' || Board[xposition1 - i][xposition2] == 'C' || Board[xposition1 - i][xposition2] == 'S')
+			{
+				yposition = generateDirection();
+			}
+		}
+	}
+	if (yposition == "East" || yposition == "east" || yposition == "E")
+	{
+		for (int i = 0; i <2; i++)
+		{
+			if (Board[xposition1][xposition2 + i] == 'A' || Board[xposition1][xposition2 + i] == 'B' || Board[xposition1 - i][xposition2] == 'C' || Board[xposition1 - i][xposition2] == 'S')
+			{
+				yposition = generateDirection();
+			}
 
+		}
+	}
+	if (yposition == "West" || yposition == "west" || yposition == "w")
+	{
+		for (int i = 0; i <2; i++)
+		{
+
+			if (Board[xposition1][xposition2 - i] == 'A' || Board[xposition1][xposition2 - i] == 'B' || Board[xposition1 - i][xposition2] == 'C' || Board[xposition1 - i][xposition2] == 'S')
+			{
+				yposition = generateDirection();
+			}
+
+		}
+	}
+	if (yposition == "South" || yposition == "south" || yposition == "S")
+	{
+		for (int i = 0; i <2; i++)
+		{
+			if (Board[xposition1 + i][xposition2] == 'A' || Board[xposition1 + i][xposition2] == 'B' || Board[xposition1 - i][xposition2] == 'C' || Board[xposition1 - i][xposition2] == 'S')
+			{
+				yposition = generateDirection();
+			}
+		}
+	}
+	//Validation for the squares
+	while ((yposition == "North" || yposition == "north" || yposition == "N") && xposition1 < 1)
+	{
+		yposition = generateDirection();
+	}
+	while ((yposition == "East" || yposition == "east" || yposition == "E") && xposition2 > 8)
+	{
+		yposition = generateDirection();
+	}
+	while ((yposition == "South" || yposition == "south" || yposition == "south") && xposition1 > 8)
+	{
+		yposition = generateDirection();
+	}
+	while ((yposition == "West" || yposition == "west" || yposition == "w") && xposition2 < 1)
+	{
+		yposition = generateDirection();
+	}
+
+	if (yposition == "North" || yposition == "north" || yposition == "N")
+	{
+		for (int i = 0; i <2; i++)
+		{
+			Board[xposition1 - i][xposition2] = 'D';
+		}
+	}
+	else if (yposition == "East" || yposition == "east" || yposition == "E")
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			Board[xposition1][xposition2 + i] = 'D';
+		}
+	}
+
+	else if (yposition == "West" || yposition == "west" || yposition == "w")
+	{
+		for (int i = 0; i <2; i++)
+		{
+			Board[xposition1][xposition2 - i] = 'D';
+		}
+	}
+	else if (yposition == "South" || yposition == "south" || yposition == "south")
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			Board[xposition1 + i][xposition2] = 'D';
+		}
+	}
 }
 // ----------------------------------------------------------------------------------
