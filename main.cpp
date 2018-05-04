@@ -63,21 +63,32 @@ public:
 };
 // ---------------------------------------------------------------------------------
 
-// -- Battleship AI class : inherits ship Placement Class --------------------------
-class Battleshipai : public ShipPlacement
+// -- Battleship AI class : inherits General ship Placement Class --------------------------
+class Battleshipai : public GeneralShipPlacement
 {
 private:
-	bool Aircraftdestroyed;
-	bool Cruiserdestroyed;
-	bool Battleshipdestroyed;
-	bool Submarinedestroyed;
-	bool Destroyerdestroyed;
-	char shotPosition1Ai;
-	int  shotPosition2ai;
+	int number;
 public:
-	int number = rand() % 10 + 1;
+	void setNumber()
+	{
+		number = rand() % 10 + 1;
+	}
+	int getNUmber()
+	{
+		return number;
+	}
 	void CheckSurvival(const char Boardp1[][10], int SIZE);
 	void ShotPosition1(char BoardGuess[][10]);
+	virtual void SetxpositionAircraft(char Board[][10], int SIZE);
+	virtual void SetypositionAircraft(char Board[][10], int SIZE);
+	virtual void SetxpositionBattleship(char Board[][10], int SIZE);
+	virtual void SetypositionBattleship(char Board[][10], int SIZE);
+	virtual void SetxpositionCruiser(char Board[][10]);
+	virtual void setypositionCruiser(char Board[][10], int SIZE);
+	virtual void SetxpositionSubmarine(char Board[][10]);
+	virtual void SetypositionSubmarine(char Board[][10], int SIZE);
+	virtual void SetxpositionDestroyer(char Board[][10]);
+	virtual void SetypositionDestroyer(char Board[][10], int SIZE);
 };
 // ---------------------------------------------------------------------------------
 
@@ -85,8 +96,8 @@ public:
 int main()
 {
 	const int SIZE = 10; // constant size for boards
-	// --- four 2D arrays for play boards -------
-	char BoardP1[SIZE][SIZE];   
+						 // --- four 2D arrays for play boards -------
+	char BoardP1[SIZE][SIZE];
 	char BoardP2[SIZE][SIZE];
 	char BoardGuessP1[SIZE][SIZE];
 	char BoardGuessP2[SIZE][SIZE];
@@ -106,7 +117,7 @@ int main()
 			cout << "You have made an Invalid choice Please try again" << endl;
 			cin >> choice;
 		}
-		
+
 		if (choice == 1) // choice 1 plays vs. AI
 		{
 			cout << "Single player Vs. AI Coming soon." << endl;
@@ -118,7 +129,7 @@ int main()
 			cout << "You have chosen 2-Player mode " << endl;
 			cout << "Creating the Board" << endl;
 			// fills all boards with blank values
-			CreateBoard(BoardP1, SIZE);      
+			CreateBoard(BoardP1, SIZE);
 			CreateBoard(BoardGuessP1, SIZE);
 			CreateBoard(BoardP2, SIZE);
 			CreateBoard(BoardGuessP2, SIZE);
@@ -205,7 +216,7 @@ void Shipplacement(char Board[][10], int SIZE, int playerNum)
 	// displays board for reference
 	Display(Board, SIZE);
 	// calls all member fuctions in Ship Placement class to set ships ---------
-	cout << "PLAYER "<< playerNum << " PLACE YOUR SHIPS" << endl;
+	cout << "PLAYER " << playerNum << " PLACE YOUR SHIPS" << endl;
 	Battleship.SetxpositionAircraft(Board, SIZE);
 	Battleship.SetypositionAircraft(Board, SIZE);
 	Display(Board, SIZE);
@@ -322,10 +333,10 @@ void saveGame(char  board1[][10], char board2[][10], char boardGuess1[][10], cha
 
 	string saveName; // variable for save file name
 
-	// user enters save file name
+					 // user enters save file name
 	cout << "Enter name for save file (No spaces or special characters): ";
 	cin.ignore();
-	getline(cin, saveName); 
+	getline(cin, saveName);
 
 	// converts save file name to alphbetical characters only
 	for (int i = 0; i < saveName.length(); i++)
@@ -335,7 +346,7 @@ void saveGame(char  board1[][10], char board2[][10], char boardGuess1[][10], cha
 			saveName[i] = '\b';
 		}
 	}
-	
+
 	// checks if user added .txt to the end of save file name
 	if (saveName.find(".txt") > saveName.length())
 	{
@@ -344,7 +355,7 @@ void saveGame(char  board1[][10], char board2[][10], char boardGuess1[][10], cha
 
 	outfile.open(saveName); // opens save file 
 
-	// loops through all boards and saves contents to save file
+							// loops through all boards and saves contents to save file
 	for (int i = 0; i < size; i++)
 	{
 		for (int j = 0; j < size; j++)
@@ -384,7 +395,7 @@ bool loadGame(char  board1[][10], char board2[][10], char boardGuess1[][10], cha
 
 	string loadName; // variable for load file name
 
-	// user enters name of file they wish to load
+					 // user enters name of file they wish to load
 	cout << "Enter the name of the game file you wish to load: ";
 	cin.clear();
 	cin >> loadName;
@@ -438,9 +449,9 @@ void playGame(char BoardP1[][10], char BoardP2[][10], char BoardGuessP1[][10], c
 	while (true)
 	{
 		// variables for input and couter for win condition 
-		char temp; 
-		int position1, position2, counter; 
-		
+		char temp;
+		int position1, position2, counter;
+
 		if (playerTurn == 1)
 		{
 			// PLAYER ONE'S TURN -------------------------------------------------------------------------
@@ -566,8 +577,8 @@ void playGame(char BoardP1[][10], char BoardP2[][10], char BoardGuessP1[][10], c
 			break;
 		}
 		playerTurn = 1; // sets player turn to 1 after player 2 is done
-		//-----------------------------------------------------------------------------------
-		// --------------------------------------------------------------------------------------------------------
+						//-----------------------------------------------------------------------------------
+						// --------------------------------------------------------------------------------------------------------
 	}
 }
 // --------------------------------------------------------------------------------------------------------------------------------
@@ -1178,11 +1189,11 @@ void ShipPlacement::SetypositionDestroyer(char Board[][10], int SIZE)
 // ----- Battle Ship AI class member fucntion implimentation ------------------------
 void Battleshipai::CheckSurvival(const char Boardp1[][10], int SIZE)
 {
-	Aircraftdestroyed = true;
-	Battleshipdestroyed = true;
-	Cruiserdestroyed = true;
-	Submarinedestroyed = true;
-	Destroyerdestroyed = true;
+	bool Aircraftdestroyed = true;
+	bool Battleshipdestroyed = true;
+	bool Cruiserdestroyed = true;
+	bool Submarinedestroyed = true;
+	bool Destroyerdestroyed = true;
 	for (int i = 0; i < SIZE; i++)
 	{
 		for (int j = 0; j < SIZE; j++)
@@ -1259,5 +1270,46 @@ void Battleshipai::ShotPosition1(char BoardGuess[][10])
 	shotPosition1Ai = numberChoice;
 
 	shotPosition2ai = letterChoice;
+}
+
+void Battleshipai::SetxpositionAircraft(char Board[][10], int SIZE)
+{
+
+}
+void Battleshipai::SetypositionAircraft(char Board[][10], int SIZE)
+{
+
+}
+void Battleshipai::SetxpositionBattleship(char Board[][10], int SIZE)
+{
+
+}
+void Battleshipai::SetypositionBattleship(char Board[][10], int SIZE)
+{
+
+}
+void Battleshipai::SetxpositionCruiser(char Board[][10])
+{
+
+}
+void Battleshipai::setypositionCruiser(char Board[][10], int SIZE)
+{
+
+}
+void Battleshipai::SetxpositionSubmarine(char Board[][10])
+{
+
+}
+void Battleshipai::SetypositionSubmarine(char Board[][10], int SIZE)
+{
+
+}
+void Battleshipai::SetxpositionDestroyer(char Board[][10])
+{
+
+}
+void Battleshipai::SetypositionDestroyer(char Board[][10], int SIZE)
+{
+
 }
 // ----------------------------------------------------------------------------------
